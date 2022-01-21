@@ -3,4 +3,4 @@ project(graphCompression)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(graphCompression main.cpp)
+add_executable(graphCompression main.cpp Graph.cpp Graph.h GraphCom.cpp GraphCom.h)
