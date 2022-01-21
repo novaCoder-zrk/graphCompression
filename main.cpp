@@ -3,6 +3,7 @@
 #include "GraphCom.h"
 using namespace std;
 int main() {
+
     GraphCom gc;
     freopen("a.txt","r",stdin);
     int N = 0;

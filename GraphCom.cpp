@@ -72,9 +72,9 @@ void GraphCom::dividing(int m, int r) {
         for(int i = 0;i < m;i++){
             //计算每一个排列的 min
             for(auto v:sn.second){
-                shingle[i] = min(shingle[i],pi[i][v]);
+                shingle[i] = min(shingle[i],pi[i][v-1]);
                 for (int u:g.getNeighbors(v))
-                    shingle[i] = min(shingle[i],pi[i][u]);
+                    shingle[i] = min(shingle[i],pi[i][u-1]);
             }
         }
         //按照signature 划分
@@ -84,7 +84,7 @@ void GraphCom::dividing(int m, int r) {
             //long long code = i;
             for(int j = 0;j < r;j++) {
                 //code = (code << 24) | shingle[i * r + j];
-                code = code + to_string(shingle[i * r + j]);
+                code = code + " " + to_string(shingle[i * r + j]);
             }
             size_t key = hash<string>()(code);
             buckets[key].insert(sn.first);
@@ -98,19 +98,16 @@ void GraphCom::merge(int iter) {
 
     for(auto bk:buckets){
         //遍历每一个buckets
+        if(bk.second.size() <= 1 ) continue;
         map<int,map<int,int>> node2super;//记录每个点和supernode中的邻接点的数量
         map<int,set<int>>     super2node;//记录每个supernode的临界点
         for(int sn:bk.second){
             //遍历bk中每一个supernode
             for(int v:supernodes[sn]) {
-                if (node2super.count(v) == 0)
-                    node2super[v] = map<int,int>();
 
-                if(node2super[v].count(sn) == 0)
-                    node2super[v][sn] = 0;
                 for(int u:g.getNeighbors(v)) {
                     node2super[u][sn]++;//u 是supernode 中节点的邻接点，u与sn中的点相邻，计数+1
-                    super2node[sn].insert(v);//v 是supernode sn的邻接点
+                    super2node[sn].insert(u);//v是超点中的点  u 是supernode sn的邻接点
                 }
             }
         }
