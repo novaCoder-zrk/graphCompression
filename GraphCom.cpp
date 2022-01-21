@@ -9,19 +9,19 @@ void GraphCom::initialGraph(Graph inputG) {
 
 void GraphCom::addEdge(int src, int dst, bool ordered) {
     if(ordered){
-        /*if(deg.count(src) == 0)
+        if(deg.count(src) == 0)
             deg[src] = 1;
-        else deg[src]++;*/
+        else deg[src]++;
         g.addOrderedEdge(src,dst);
     }
     else {
         g.addUnorderedEdge(src, dst);
-        /*if(deg.count(src) == 0)
+        if(deg.count(src) == 0)
             deg[src] = 1;
         else deg[src]++;
         if(deg.count(dst) == 0)
             deg[dst] = 1;
-        else deg[dst]++;*/
+        else deg[dst]++;
     }
 }
 void GraphCom::initialSuperNode() {
@@ -154,11 +154,14 @@ void GraphCom::merge(int iter) {
                 }
             }
             double saving = save(sa,sb);
+
+            //merge A B :B <- A
             if(saving >= threshold){
                 // B 在Q中 如果满足了合并的条件 将以sb为合并后的标志
                 unite(sb,sa);
                 mergeSuperNode(sb,sa);
-
+                deg[sb] = deg[sb] + deg[sa];
+                deg.erase(sa);
             }
 
         }
@@ -243,7 +246,46 @@ double GraphCom::save(int sa,int sb){
     return ans;
 }
 void GraphCom::encode(){
+    for(auto sn:supernodes){
+        //得到点 sn 与所有超点的邻接度数
+        unordered_map<int,int> superDeg = getSuperDeg(sn.first);
+        for(auto s:superDeg){
+            //遍历 sn的所有邻接的超点s 计算pi 和 countedege
+            long edgeCount,pi;
+            if(s.first == sn.first){
+                //判断是否需要添加 自环
+                pi = supernodes[s.first].size();
+                pi = pi*(pi-1);
+                edgeCount = superDeg[s.first];
 
+            }
+            else{
+                pi = supernodes[s.first].size() * supernodes[sn.first].size();
+                edgeCount = superDeg[s.first];
+            }
+            if(pi-edgeCount + 1 < edgeCount){
+                //构造超边P 和 cm
+                P.addUnorderedEdge(sn.first,s.first);
+                for(int u:supernodes[sn.first]){
+                    for(int v:supernodes[s.first]){
+                        if(u == v) continue;
+                        if(!g.isAdj(u,v))
+                            cm.addUnorderedEdge(u,v);
+                    }
+                }
+            }
+            else{
+                //构造 cp
+                for(int u:supernodes[sn.first]){
+                    for(int v:supernodes[s.first]) {
+                        if(g.isAdj(u,v))
+                            cp.addUnorderedEdge(u,v);
+                    }
+                }
+            }
+
+        }
+    }
 }
 void GraphCom::processBatch(int m,int r,int t1) {
     T = t1;

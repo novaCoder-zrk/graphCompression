@@ -36,12 +36,15 @@ public:
     void processBatch(int m,int r,int t1);//进行迭代处理
     void encode();
 private:
-    int T;
-    Graph g;
-    vector<int> node2Super;
+    int T;//the number of iterations
+    Graph g;//存储整张图
+    vector<int> node2Super; //记录每一个顶点所属的超点
     map<int,set<int>> supernodes;
-    unordered_map<size_t,set<int>> buckets;
-   // map<int,int>deg;//每个supernode的度
+    unordered_map<size_t,set<int>> buckets;//通过LSH 将超点分到桶中
+    map<int,int>deg;//每个supernode的度
+    Graph cm;
+    Graph cp;
+    Graph P;
 };
 
 

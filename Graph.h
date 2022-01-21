@@ -19,7 +19,7 @@ public:
 private:
     map<int,set<int>> adjList;
     set<int> vertex;
-
+    long cntEdge;
 };
 
 

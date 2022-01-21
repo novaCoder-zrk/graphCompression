@@ -1,13 +1,19 @@
 #include <iostream>
 #include "Graph.h"
 #include "GraphCom.h"
+using namespace std;
 int main() {
     GraphCom gc;
-    gc.addEdge(1,2,0);
-    gc.addEdge(2,3,0);
-
+    freopen("a.txt","r",stdin);
+    int N = 0;
+    cin >> N;
+    for (int i = 0; i < 16; i++) {
+        int u,v;
+        cin>>u>>v;
+        gc.addEdge(u, v, 0);
+    }
 
     gc.initialSuperNode();
-    gc.dividing(6,2);
+    gc.processBatch(6,2,3);
     return 0;
 }
