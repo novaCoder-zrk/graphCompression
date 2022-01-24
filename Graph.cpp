@@ -37,3 +37,6 @@ int Graph::maxVertex() {
     it--;
     return *it;
 }
+int Graph::getEdgeNum() {
+    return cntEdge;
+}

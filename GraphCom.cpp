@@ -41,6 +41,7 @@ int GraphCom::find(int u){
 }
 
 bool GraphCom::unite(int u,int v){
+
      u = find(u);
      v = find(v);
     if(u == v) return false;
@@ -101,8 +102,16 @@ void GraphCom::merge(int iter) {
         if(bk.second.size() <= 1 ) continue;
         map<int,map<int,int>> node2super;//记录每个点和supernode中的邻接点的数量
         map<int,set<int>>     super2node;//记录每个supernode的临界点
+
+        vector<int>Q;
         for(int sn:bk.second){
+            sn = find(sn);
+            Q.push_back(sn);
+        }
+
+        for(int sn:Q){
             //遍历bk中每一个supernode
+
             for(int v:supernodes[sn]) {
 
                 for(int u:g.getNeighbors(v)) {
@@ -113,15 +122,17 @@ void GraphCom::merge(int iter) {
         }
 
 
-        vector<int> Q(bk.second.begin(),bk.second.end());
+
         while(Q.size() >1){
             //在Q中随机选取
-            int random = rand()%(Q.size()+1);
+
+            int random = rand()%(Q.size());
             int A = Q[random];
             Q.erase(Q.begin()+random);
             //计算superJaccard
 
             //A所在的超点是以sa为标志的
+
             int sa = find(A);
             map<int,int> minSum;
             map<int,int> maxSum;
@@ -140,10 +151,13 @@ void GraphCom::merge(int iter) {
             for(int sv:Q){
                 maxSum[sv] = deg[sa] + deg[sv] - minSum[sv];
             }
+
             double maxSuperJaccar = -1.0;
             int sb = -1;
             for(int i = 0;i < Q.size();i++){
-                int sv = Q[i];
+
+                int sv = find(Q[i]);
+                int a = minSum[sv];
                 double superJaccard = minSum[sv]*1.0 / maxSum[sv];
                 if(superJaccard > maxSuperJaccar){
                     maxSuperJaccar = superJaccard;
@@ -153,7 +167,8 @@ void GraphCom::merge(int iter) {
             double saving = save(sa,sb);
 
             //merge A B :B <- A
-            if(saving >= threshold){
+            //if(saving >= threshold){
+            if(saving >threshold){
                 // B 在Q中 如果满足了合并的条件 将以sb为合并后的标志
                 unite(sb,sa);
                 mergeSuperNode(sb,sa);
@@ -170,6 +185,7 @@ unordered_map<int,int> GraphCom::getSuperDeg(int sv) {
     unordered_map<int,int> superdeg;
     for(int v:supernodes[sv]){
         for(int u:g.getNeighbors(v)){
+
             int s = find(u);
             if(superdeg.count(s) == 0)
                 superdeg[s] = 0;
@@ -211,7 +227,7 @@ long GraphCom::getMergeCost(int sa,int sb) {
     for(auto s:sd){
         superdeg[s.first] += s.second;
     }
-    superdeg[sa] += sd[sb];
+    superdeg[sa] += superdeg[sb];
     superdeg.erase(sb);
     //
     long cost = 0;
@@ -220,14 +236,14 @@ long GraphCom::getMergeCost(int sa,int sb) {
         //sn 是和sv邻接的supernode
         long pi,edgeCount;
         if(sn == sa){
-            pi = supernodes[sa].size();
+            pi = supernodes[sa].size()+supernodes[sb].size();
             pi = pi*(pi-1);
             edgeCount = superdeg[sn];
             pi /= 2;
             edgeCount /= 2;
         }
         else{
-            pi = supernodes[sa].size() * supernodes[sn].size();
+            pi = (supernodes[sa].size()+supernodes[sb].size()) * supernodes[sn].size();
             edgeCount = superdeg[sn];
         }
         cost += min(pi-edgeCount +1 ,edgeCount);
@@ -291,4 +307,10 @@ void GraphCom::processBatch(int m,int r,int t1) {
         merge(iter);
     }
     encode();
+    cout<<"sourece graph :"<<g.getEdgeNum()<<endl;
+    cout<<"compressed total: "<<P.getEdgeNum() + cm.getEdgeNum() + cp.getEdgeNum() <<endl;
+    cout<<"P:"<<P.getEdgeNum()<<endl;
+    cout<<"cm :"<<cm.getEdgeNum()<<endl;
+    cout<<"cp:"<<cp.getEdgeNum()<<endl;
+    return;
 }

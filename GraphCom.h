@@ -5,6 +5,7 @@
 #ifndef GRAPHCOMPRESSION_GRAPHCOM_H
 #define GRAPHCOMPRESSION_GRAPHCOM_H
 #include "Graph.h"
+#include <iostream>
 #include <cstdlib>
 #include <ctime>
 #include <vector>

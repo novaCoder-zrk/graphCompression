@@ -6,15 +6,12 @@ int main() {
 
     GraphCom gc;
     freopen("a.txt","r",stdin);
-    int N = 0;
-    cin >> N;
-    for (int i = 0; i < 16; i++) {
-        int u,v;
-        cin>>u>>v;
+    int u,v,x;
+    while(cin >>u>>v>>x) {
         gc.addEdge(u, v, 0);
     }
 
     gc.initialSuperNode();
-    gc.processBatch(6,2,3);
+    gc.processBatch(1,1,20);
     return 0;
 }

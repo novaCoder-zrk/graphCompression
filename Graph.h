@@ -16,6 +16,7 @@ public:
     set<int> getNeighbors(int u);
     bool isAdj(int src,int dst);
     int maxVertex();
+    int getEdgeNum();
 private:
     map<int,set<int>> adjList;
     set<int> vertex;
